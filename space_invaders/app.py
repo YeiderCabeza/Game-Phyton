@@ -20,25 +20,25 @@ def resource_path(relative_path):
         return os.path.join(base_path, relative_path)
 
 
-fondo = resource_path('assets/images/background.png')
+fondo = resource_path('space_invaders/assets/images/background.png')
 background = pygame.image.load(fondo)
 
-icon = resource_path('assets/images/ufo.png')
+icon = resource_path('space_invaders/assets/images/ufo.png')
 icon = pygame.image.load(icon)
 
-sonido = resource_path('assets/audios/background_music.mp3')
+sonido = resource_path('space_invaders/assets/audios/background_music.mp3')
 background_sound = pygame.mixer.music.load(sonido)
 
-imgjugador = resource_path('assets/images/space-invaders.png')
+imgjugador = resource_path('space_invaders/assets/images/space-invaders.png')
 playerimg = pygame.image.load(imgjugador)
 
-bala = resource_path('assets/images/bullet.png')
+bala = resource_path('space_invaders/assets/images/bullet.png')
 bulletimg = pygame.image.load(bala)
 
-gameover_font = resource_path('assets/fonts/RAVIE.TTF')
+gameover_font = resource_path('space_invaders/assets/fonts/RAVIE.TTF')
 over_font = pygame.font.Font(gameover_font, 60)
 
-fuente = resource_path('assets/fonts/comicbd.ttf')
+fuente = resource_path('space_invaders/assets/fonts/comicbd.ttf')
 font = pygame.font.Font(fuente, 32) #tamaño de la fuente
 
 
@@ -65,9 +65,9 @@ no_of_enemies = 10
 
 # variables para guardar la posiciones de los enemigos
 for i in range(no_of_enemies):
-    enemy1 = resource_path('assets/images/enemy1.png')
+    enemy1 = resource_path('space_invaders/assets/images/enemy1.png')
     enemyimg.append(pygame.image.load(enemy1))
-    enemy2 = resource_path('assets/images/enemy2.png')
+    enemy2 = resource_path('space_invaders/assets/images/enemy2.png')
     enemyimg.append(pygame.image.load(enemy2))
 
     # rango de la posicion para el enemigo en X(horizontal) Y(vertical)
