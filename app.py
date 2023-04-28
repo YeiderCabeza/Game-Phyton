@@ -6,13 +6,12 @@ import math
 
 pygame.init()
 
-# dimensiones de la pantalla
+# Dimensiones de la pantalla
 screen_with = 800
 screen_height = 600
 screen = pygame.display.set_mode((screen_with, screen_height))
 
-
-# ruta de los recursos
+# Ruta de los recursos
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -21,39 +20,39 @@ def resource_path(relative_path):
         return os.path.join(base_path, relative_path)
 
 
-asset_background = resource_path('assets/images/background.png')
-background = pygame.image.load(asset_background)
+fondo = resource_path('assets/images/background.png')
+background = pygame.image.load(fondo)
 
-asset_icon = resource_path('assets/images/ufo.png')
-icon = pygame.image.load(asset_icon)
+icon = resource_path('assets/images/ufo.png')
+icon = pygame.image.load(icon)
 
-asset_sound = resource_path('assets/audios/background_music.mp3')
-background_sound = pygame.mixer.music.load(asset_sound)
+sonido = resource_path('assets/audios/background_music.mp3')
+background_sound = pygame.mixer.music.load(sonido)
 
-asset_playering = resource_path('assets/images/space-invaders.png')
-playerimg = pygame.image.load(asset_playering)
+imgjugador = resource_path('assets/images/space-invaders.png')
+playerimg = pygame.image.load(imgjugador)
 
-asset_bullet = resource_path('assets/images/bullet.png')
-bulletimg = pygame.image.load(asset_bullet)
+bala = resource_path('assets/images/bullet.png')
+bulletimg = pygame.image.load(bala)
 
-asset_over_font = resource_path('assets/fonts/RAVIE.TTF')
-over_font = pygame.font.Font(asset_over_font, 60)
+gameover_font = resource_path('assets/fonts/RAVIE.TTF')
+over_font = pygame.font.Font(gameover_font, 60)
 
-asset_fonts = resource_path('assets/fonts/comicbd.ttf')
-font = pygame.font.Font(asset_fonts, 32)
+fuente = resource_path('assets/fonts/comicbd.ttf')
+font = pygame.font.Font(fuente, 32) #tamaño de la fuente
 
 
 # ---- TITULO ----
 pygame.display.set_caption("DEMO")
 pygame.display.set_icon(icon)
-pygame.mixer.music.play(-1)
+# #loopses un argumento entero opcional, que es 0 por defecto, que indica cuántas veces repetir la música.
+# La música se repite indefinidamente si este argumento se establece en -1.
+# pygame.mixer.music.play(-1)
 clock = pygame.time.Clock()
 
 # Posicion del jugador
-playerX = 370
-playerY = 470
-playerX_change = 0
-playerY_change = 0
+playerX, playerY = 370, 470
+playerX_change, playerY_change  = 0, 0
 
 # lista para almacenar la posicion de los enemigos
 enemyimg = []
@@ -61,35 +60,39 @@ enemyX = []
 enemyY = []
 enemyX_change = []
 enemyY_change = []
+#la cantidad de enemigos
 no_of_enemies = 10
 
 # variables para guardar la posiciones de los enemigos
 for i in range(no_of_enemies):
     enemy1 = resource_path('assets/images/enemy1.png')
     enemyimg.append(pygame.image.load(enemy1))
-
     enemy2 = resource_path('assets/images/enemy2.png')
     enemyimg.append(pygame.image.load(enemy2))
 
-    # posicion para el enemigo en X Y
+    # rango de la posicion para el enemigo en X(horizontal) Y(vertical)
     enemyX.append(random.randint(0,736))
     enemyY.append(random.randint(0,150))
-    enemyX_change.append(5)
-    enemyY_change.append(20)
+    enemyX_change.append(5) #velocidad en la que aparecen
+    enemyY_change.append(20) # posiciones a la que baja 
 
-    # variables para guardar la posiciones de la bala
-    bulletX = 0
-    bulletY = 480
-    bulletX_change = 0
-    bulletY_change = 10
+# Variables para guardar la posiciones de la bala
+    #forma normal 
+    # bulletX = 0
+    # bulletY = 480
+    # bulletX_change = 0
+    # bulletY_change = 10
+    
+    # #forma sencilla de escribir el codigo
+    bulletX, bulletY = 0, 480 
+    bulletX_change, bulletY_change = 0, 10
     bullet_state = "ready"
 
     # puntuacion
-    score = 0
-
-    def show_score():
-        score_value = font.render("SCORE " + str(score), True, (255, 255, 255))
-        screen.blit(score_value, (10, 10))
+    puntos = 0
+    def Mostrar_puntos():
+        puntos_valor = font.render("Puntos " + str(puntos), True, (255, 255, 255)) #color de la letra
+        screen.blit(puntos_valor, (10, 10)) #posicion del texto en la pantalla
 
     # mostra en pantalla al player
     def player(x, y):
@@ -97,18 +100,17 @@ for i in range(no_of_enemies):
 
     def enemy(x, y):
         screen.blit(enemyimg[i], (x, y))
-
+        
+#---------------------------------------------------------------------------------------------------------------------
     # funcion para disparar
     def fire_bullet(x, y):
         global bullet_state
         bullet_state = "fire"
-        screen.blit(bulletimg, (x + 16, y + 10))
+        screen.blit(bulletimg, (x + 16, y + 10) )
 
     # funcion para compra si ha habido un choque
     def iscollission(enemyX, enemyY, bulletX, bulletY):
-        distance = math.sqrt((math.pow(enemyX-bulletX, 2)) +
-                             (math.pow(enemyY-bulletY, 2)))
-
+        distance = math.sqrt((math.pow(enemyX-bulletX, 2)) + (math.pow(enemyY-bulletY, 2)))
         if distance < 27:
             return True
         else:
@@ -121,10 +123,14 @@ for i in range(no_of_enemies):
             center=(int(screen_with/2), int(screen_height/2)))
         screen.blit(over_text, text_rect)
 
-        # funcion principal del juego
+
+
+
+
+
+    # funcion principal del juego
     def gameloop():
-        
-        global score
+        global puntos
         global playerX
         global playerX_change
         global bulletX
@@ -134,13 +140,15 @@ for i in range(no_of_enemies):
 
         in_game = True
         while in_game:
-            screen.fill((0,0,0))
-            screen.blit(background, (0, 0))
+            #majeja eventos actualiza y renderiza
+         #limpia la pantalla
+            screen.fill((0, 0, 0))
+            screen.blit(background, (0, 0)) #posicion de la imagen de fondo
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     in_game = False
-                    pygame.quit()
+                    pygame.quit()#cerrar el juego
                     sys.exit()
 
                 if event.type == pygame.KEYDOWN:
@@ -157,13 +165,14 @@ for i in range(no_of_enemies):
                 if event.type == pygame.KEYUP:
                         playerX_change = 0
 
-            # se actualiza la posicion del jugaor
+            # se actualiza la posicion del jugador
             playerX += playerX_change
 
             if playerX <= 0:
                 playerX = 0
             elif playerX >= 736:
                 playerX = 736
+                
             # BUCLE QUE SE EJECUTA PARA CADA ENEMIGO
             for i in range(no_of_enemies):
                 if enemyY[i] > 440:
@@ -180,28 +189,25 @@ for i in range(no_of_enemies):
                     enemyY[i] += enemyX_change[i]
 
                 # se comprueba si hay una colision entre una bala y un enemigo
-
                 collision = iscollission(enemyX[i], enemyY[i], bulletX, bulletY)
                 if collision:
                     bulletY = 454
                     bullet_state = "ready"
-                    score += 1
+                    puntos += 1
                     enemyX[i] = random.randint(0, 736)
                     enemyY[i] = random.randint(0, 150)
                 enemy(enemyX[i], enemyY[i])
 
             if bulletY < 0:
                 bulletY = 454
-                bullet_state == "ready"
+                bullet_state = "ready"
             if bullet_state == "fire":
                 fire_bullet(bulletX, bulletY)
                 bulletY -= bulletY_change
 
             player(playerX, playerY)
-            show_score()
-
+            Mostrar_puntos()
             pygame.display.update()
-
             clock.tick(120)
 
 gameloop()
