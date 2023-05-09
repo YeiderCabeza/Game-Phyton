@@ -1,92 +1,117 @@
 import pygame, sys
-from random import randint
 from pygame.locals import *
-pygame.init()
 
-#colores funcionan en rgb
-# color= (255,9,87)
-color = pygame.Color(25,97,87)
-pantalla = pygame.display.set_mode((800,600))
-pygame.display.set_caption("Space Game")
+#  variables globales
+ancho = 900
+alto = 480
 
-# creando figuras geometricas                               
-# pygame.draw.line(pantalla,color,(20,40),(520,70),10)#punto inicial,punto final,ancho
-# pygame.draw.circle(pantalla,color,(480,290),120)#punto inicial,radio
-rectangulo =pygame.draw.rect(pantalla,color,(50,470,200,80))#punto inicial,largo,ancho
-# pygame.draw.polygon(pantalla,color,( (40,50),(150,34),(240,340), (49,239) ))#cordenadas que se unen 
-imagen= pygame.image.load("space_invaders/assets/images/space-invaders1.png")
-
-fuente = pygame.font.Font('space_invaders/assets/fonts/comicbd.ttf', 32)
-texto = fuente.render("texto en pantalla",0,color)
-
-fuentesys = pygame.font.SysFont('Arial', 32)
-textosys = fuentesys.render("texto en pantalla",0,color)
-
-
-
-# posX = randint(0,129) 
-# posY = randint(0,129)
-posX,posY = 200, 100
-velocidad = 1
-blanco=(255,255,255)
-derecha= True
-aux = 1
-
-#Recorre los eventos ya establecidos por pygame
-while True:
-    # el metodo get_tick devuelve un entero en milisegundos
-   tiempo = pygame.time.get_ticks()/1000
-   if aux==tiempo :
-       aux+=1
-       print (tiempo)
+class navespacial(pygame.sprite.Sprite):
+    # clase para las naves 
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.imagenave =pygame.image.load("space_game/assets/nave.jpg")
+        
+        # posicion de la nave 
+        #crea un nuevo rect con el tamaño de la imagen
+        self.rect = self.imagenave.get_rect()
+        self.rect.centerx = ancho/2
+        self.rect.centery = alto-30
+        
+        self.listaDisparo= []
+        self.vida = True
+        self.velocidad = 5
+        # print (self.rect)
+        
+    def movimiento(self):
+        if self.vida == True:
+            if self.rect.left <=0:
+                self.rect.left = 0
+            elif self.rect.right>900: 
+                self.rect.right =900
     
-#    pantalla.fill(color)
-   pantalla.fill(blanco)
-   rectangulo_dos=pantalla.blit(imagen, (posX, posY)) #carga la img de la nave
-   
-   pygame.draw.rect(pantalla, color, rectangulo)
-   rectangulo.left, rectangulo.top = pygame.mouse.get_pos()
-   
-   if rectangulo.colliderect(rectangulo_dos):
-       velocidad= 0
-       print("colisiono")
-   
-   for evento in pygame.event.get():
-       if evento.type == QUIT:
-           pygame.quit()
-           sys.exit()
-    #    elif evento.type ==pygame.KEYDOWN:
-    #        if evento.key == K_LEFT:
-    #            posX-=velocidad 
-    #        elif evento.key == K_RIGHT:
-    #            posX+=velocidad 
-    #    elif evento.type ==pygame.KEYUP:
-    #        if evento.key == K_LEFT:
-    #            print(" izquierda liberada")
-    #        elif evento.key == K_RIGHT:
-    #            print(" derecha liberada")
-   if derecha ==True:
-       if posX<700:
-           posX+=velocidad
-           rectangulo_dos.left= posX
-       else:
-           derecha = False
-   else:
-       if posX>1:
-           posX-=velocidad
-           rectangulo_dos.left= posX
-       else:
-           derecha = True
-#funcion para el mouse
-#    posX, posY = pygame.mouse.get_pos()
-#    posX = posX-43
-#    posY = posY-40
-
-#  COLOCAR TEXTO EN LA PANTALLA
-#    
-#    pantalla.blit(textosys,(300,400))
-
-   contador = fuente.render("Time: " + str(tiempo),0,color)
-   pantalla.blit(contador,(100,100))
-   
-   pygame.display.update()
+    # def movimiento(self):#Movimiento de la nave
+    #     keys = pygame.key.get_pressed()
+    #     #Movimiento a la izquierda
+    #     if keys[K_a]:
+    #         if self.rect.centerx>51:#Si el rectangulo x es mayor a 1 hacer
+    #              self.rect.centerx -= self.velocidad
+    #     #Movimiento a la derecha
+    #     if keys[K_d]:
+    #         if self.rect.centerx<851:#Si el rectangulo x es menor 890 hacer
+    #             self.rect.centerx += self.velocidad 
+    
+    def disparar(self,x,y):
+        # print("disparo")
+        # creamos un objeto y lo guardamos en la listadedisparos
+        miproyectil = proyectil(x,y)
+        self.listaDisparo.append(miproyectil)
+    
+    def dibujar(self,superficie):
+        superficie.blit(self.imagenave, self.rect)
+          
+class proyectil(pygame.sprite.Sprite):
+    def __init__(self,posx, posy):
+       pygame.sprite.Sprite.__init__(self)
+       self.imagenProyectil = pygame.image.load('space_game/assets/disparoa.jpg')
+       self.rect = self.imagenProyectil.get_rect()
+       self.velocidadisparo = 1
+       
+       self.rect.top = posy
+       self.rect.left = posx
+       
+    def trayetoria(self):
+        self.rect.top = self.rect.top - self.velocidadisparo
+        
+    def dibujar(self, superficie):
+        superficie.blit(self.imagenProyectil, self.rect)
+        
+       
+def SpaceGame():
+    pygame.init()
+    pantalla = pygame.display.set_mode((ancho,alto))
+    pygame.display.set_caption("Space Game")
+    
+    background= pygame.image.load("space_game/assets/Fondo.jpg")
+    jugador = navespacial()
+    demoproyectil = proyectil(ancho/2, alto-30)
+    enjuego = True
+    
+    while True:
+        
+        jugador.movimiento()
+        demoproyectil.trayetoria()
+        
+        for evento in pygame.event.get():
+            if evento.type == QUIT:
+                pygame.quit()
+                sys.exit()
+                
+            if enjuego== True:
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == K_LEFT:
+                        jugador.rect.left -= jugador.velocidad
+                        
+                    elif evento.key == K_RIGHT:
+                        jugador.rect.right += jugador.velocidad   
+                        
+                    elif evento.key == K_s:
+                        # jugador.disparar()
+                        # toma la posicion el jugador y la envia al jugador.disparar/proyectil/trayectoria
+                        x,y = jugador.rect.center
+                        jugador.disparar(x,y)
+        
+        pantalla.blit(background,(0,0))
+        jugador.dibujar(pantalla)
+        # demoproyectil.dibujar(pantalla)
+        
+        if len(jugador.listaDisparo)>0:
+            for x in jugador.listaDisparo:
+                x.dibujar(pantalla)
+                x.trayetoria()
+                # elimina los disparos en la pantalla
+                if x.rect.top < 100:
+                    jugador.listaDisparo.remove(x)
+                
+        pygame.display.update()
+        
+SpaceGame()
